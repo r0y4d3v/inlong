@@ -24,6 +24,8 @@ import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.types.logical.LogicalType;
 import org.apache.flink.table.types.logical.RowType;
 import org.apache.flink.types.RowKind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ import static org.apache.inlong.sort.formats.json.utils.FormatJsonUtil.DEBEZIUM_
  * Debezium json dynamic format
  */
 public class DebeziumJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DebeziumJsonDynamicSchemaFormat.class);
 
     private static final String DDL = "ddl";
     private static final String SCHEMA = "schema";
@@ -279,8 +283,13 @@ public class DebeziumJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
                 rowDataList.add(rowData);
             } else if (OP_DELETE.equals(op)) {
                 RowData rowData = (RowData) rowDataConverter.convert(dataBeforeNode);
-                rowData.setRowKind(RowKind.DELETE);
-                rowDataList.add(rowData);
+                if (rowData != null) { // 检查 rowData 是否为 null
+                    rowData.setRowKind(RowKind.DELETE);
+                    rowDataList.add(rowData);
+                } else {
+                    LOGGER.error("Miaow Error: The rowData is null, the raw data is :" + data.toPrettyString());
+                }
+
             } else {
                 throw new IllegalArgumentException("Unsupported op_type: " + op);
             }
