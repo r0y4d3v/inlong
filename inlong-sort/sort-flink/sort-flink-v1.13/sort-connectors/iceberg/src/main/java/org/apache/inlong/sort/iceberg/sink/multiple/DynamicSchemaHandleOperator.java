@@ -540,8 +540,6 @@ public class DynamicSchemaHandleOperator extends AbstractStreamOperator<RecordWi
 
         return IntStream.range(0, oldSchemaFields.size())
                 .allMatch(i -> {
-                            oldSchemaFields.get(i).name(), newSchemaFields.get(i).name());
-                            oldSchemaFields.get(i).type(), newSchemaFields.get(i).type());
                     return oldSchemaFields.get(i).name().equals(newSchemaFields.get(i).name())
                             && oldSchemaFields.get(i).type().equals(newSchemaFields.get(i).type());
                 });
