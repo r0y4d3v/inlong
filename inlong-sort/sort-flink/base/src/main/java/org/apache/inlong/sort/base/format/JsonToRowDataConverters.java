@@ -17,6 +17,7 @@
 
 package org.apache.inlong.sort.base.format;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.formats.common.TimestampFormat;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
@@ -65,22 +66,32 @@ import static org.apache.flink.formats.common.TimeFormats.SQL_TIMESTAMP_FORMAT;
 import static org.apache.flink.formats.common.TimeFormats.SQL_TIMESTAMP_WITH_LOCAL_TIMEZONE_FORMAT;
 import static org.apache.flink.formats.common.TimeFormats.SQL_TIME_FORMAT;
 
-/** Tool class used to convert from {@link JsonNode} to {@link RowData}. * */
+/**
+ * Tool class used to convert from {@link JsonNode} to {@link RowData}. *
+ */
 @Internal
 public class JsonToRowDataConverters implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** Flag indicating whether to fail if a field is missing. */
+    /**
+     * Flag indicating whether to fail if a field is missing.
+     */
     private final boolean failOnMissingField;
 
-    /** Flag indicating whether to ignore invalid fields/rows (default: throw an exception). */
+    /**
+     * Flag indicating whether to ignore invalid fields/rows (default: throw an exception).
+     */
     private final boolean ignoreParseErrors;
 
-    /** Timestamp format specification which is used to parse timestamp. */
+    /**
+     * Timestamp format specification which is used to parse timestamp.
+     */
     private final TimestampFormat timestampFormat;
 
-    /** Wherther adapt spark sql program. */
+    /**
+     * Wherther adapt spark sql program.
+     */
     private final boolean adaptSpark;
 
     public JsonToRowDataConverters(
@@ -104,12 +115,16 @@ public class JsonToRowDataConverters implements Serializable {
         Object convert(JsonNode jsonNode);
     }
 
-    /** Creates a runtime converter which is null safe. */
+    /**
+     * Creates a runtime converter which is null safe.
+     */
     public JsonToRowDataConverter createConverter(LogicalType type) {
         return wrapIntoNullableConverter(createNotNullConverter(type));
     }
 
-    /** Creates a runtime converter which assuming input object is not null. */
+    /**
+     * Creates a runtime converter which assuming input object is not null.
+     */
     private JsonToRowDataConverter createNotNullConverter(LogicalType type) {
         switch (type.getTypeRoot()) {
             case NULL:
@@ -223,8 +238,12 @@ public class JsonToRowDataConverters implements Serializable {
     }
 
     private int convertToDate(JsonNode jsonNode) {
-        LocalDate date = ISO_LOCAL_DATE.parse(jsonNode.asText()).query(TemporalQueries.localDate());
-        return (int) date.toEpochDay();
+        if (StringUtils.isNumeric(jsonNode.asText())) {
+            return Integer.parseInt(jsonNode.asText());
+        } else {
+            LocalDate date = ISO_LOCAL_DATE.parse(jsonNode.asText()).query(TemporalQueries.localDate());
+            return (int) date.toEpochDay();
+        }
     }
 
     private int convertToTime(JsonNode jsonNode) {
@@ -236,24 +255,29 @@ public class JsonToRowDataConverters implements Serializable {
     }
 
     private TimestampData convertToTimestamp(JsonNode jsonNode) {
-        TemporalAccessor parsedTimestamp;
-        switch (timestampFormat) {
-            case SQL:
-                parsedTimestamp = SQL_TIMESTAMP_FORMAT.parse(jsonNode.asText());
-                break;
-            case ISO_8601:
-                parsedTimestamp = ISO8601_TIMESTAMP_FORMAT.parse(jsonNode.asText());
-                break;
-            default:
-                throw new TableException(
-                        String.format(
-                                "Unsupported timestamp format '%s'. Validator should have checked that.",
-                                timestampFormat));
-        }
-        LocalTime localTime = parsedTimestamp.query(TemporalQueries.localTime());
-        LocalDate localDate = parsedTimestamp.query(TemporalQueries.localDate());
+        if (StringUtils.isNumeric(jsonNode.asText())) {
+            return TimestampData.fromEpochMillis(Long.parseLong(jsonNode.asText()));
 
-        return TimestampData.fromEpochMillis(Timestamp.valueOf(LocalDateTime.of(localDate, localTime)).getTime());
+        } else {
+            TemporalAccessor parsedTimestamp;
+            switch (timestampFormat) {
+                case SQL:
+                    parsedTimestamp = SQL_TIMESTAMP_FORMAT.parse(jsonNode.asText());
+                    break;
+                case ISO_8601:
+                    parsedTimestamp = ISO8601_TIMESTAMP_FORMAT.parse(jsonNode.asText());
+                    break;
+                default:
+                    throw new TableException(
+                            String.format(
+                                    "Unsupported timestamp format '%s'. Validator should have checked that.",
+                                    timestampFormat));
+            }
+            LocalTime localTime = parsedTimestamp.query(TemporalQueries.localTime());
+            LocalDate localDate = parsedTimestamp.query(TemporalQueries.localDate());
+
+            return TimestampData.fromEpochMillis(Timestamp.valueOf(LocalDateTime.of(localDate, localTime)).getTime());
+        }
     }
 
     private TimestampData convertToTimestampWithLocalZone(JsonNode jsonNode) {
@@ -401,7 +425,9 @@ public class JsonToRowDataConverters implements Serializable {
         };
     }
 
-    /** Exception which refers to parse errors in converters. */
+    /**
+     * Exception which refers to parse errors in converters.
+     */
     private static final class JsonParseException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;

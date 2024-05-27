@@ -54,6 +54,7 @@ public class DebeziumJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
     private static final String PAYLOAD = "payload";
     private static final String FIELDS = "fields";
     private static final String FIELD = "field";
+    private static final String NAME = "name";
     private static final String TYPE = "type";
     /**
      * Snapshot read
@@ -241,7 +242,11 @@ public class DebeziumJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
         List<RowType.RowField> fields = new ArrayList<>();
         for (JsonNode field : schema) {
             String name = field.get(FIELD).asText();
-            LogicalType type = debeziumType2FlinkType(field.get(TYPE).asText());
+
+            JsonNode debeziumNameNode = field.get(NAME);
+            String debeziumName = debeziumNameNode != null ? debeziumNameNode.asText() : "";
+
+            LogicalType type = debeziumType2FlinkType(field.get(TYPE).asText(), debeziumName);
             if (dialectSchema != null) {
                 String dialectType = dialectSchema.get(name) != null ? dialectSchema.get(name).asText() : null;
                 type = handleDialectSqlType(type, dialectType);
@@ -298,7 +303,20 @@ public class DebeziumJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
         return extractRowData(payload, rowType);
     }
 
-    private LogicalType debeziumType2FlinkType(String debeziumType) {
+    private LogicalType debeziumType2FlinkType(String debeziumType, String debeziumName) {
+        switch (debeziumName) {
+            case "io.debezium.time.Date":
+                debeziumType = "Date";
+                break;
+            case "io.debezium.time.ZonedTimestamp":
+                debeziumType = "ZonedTimestamp";
+                break;
+            case "io.debezium.time.Timestamp":
+                debeziumType = "Timestamp";
+                break;
+            default:
+        }
+
         if (DEBEZIUM_TYPE_2_FLINK_TYPE_MAPPING.containsKey(debeziumType.toUpperCase())) {
             return DEBEZIUM_TYPE_2_FLINK_TYPE_MAPPING.get(debeziumType.toUpperCase());
         } else {

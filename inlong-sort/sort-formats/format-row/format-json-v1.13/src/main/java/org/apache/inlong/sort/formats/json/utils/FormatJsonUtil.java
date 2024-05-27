@@ -62,6 +62,9 @@ public class FormatJsonUtil {
                     .put("FLOAT64", new DoubleType())
                     .put("STRING", new VarCharType())
                     .put("BYTES", new VarBinaryType())
+                    .put("DATE", new DateType())
+                    .put("ZONEDTIMESTAMP", new LocalZonedTimestampType())
+                    .put("TIMESTAMP", new TimestampType())
                     .build();
     public static final Map<Integer, LogicalType> SQL_TYPE_2_FLINK_TYPE_MAPPING =
             ImmutableMap.<Integer, LogicalType>builder()
