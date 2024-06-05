@@ -34,7 +34,7 @@
     <modules>
         <!--        <module>hive</module>-->
         <module>mysql-cdc</module>
-        <!--        <module>kafka</module>-->
+        <module>kafka</module>
         <!--        <module>jdbc</module>-->
         <!--        <module>pulsar</module>-->
 
@@ -50,7 +50,7 @@
         <!--        <module>redis</module>-->
         <!--        <module>tubemq</module>-->
         <!--        <module>filesystem</module>-->
-        <!--        <module>doris</module>-->
+        <module>doris</module>
         <!--        <module>starrocks</module>-->
         <!--        <module>hudi</module>-->
         <!--        <module>kudu</module>-->

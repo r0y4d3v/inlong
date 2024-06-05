@@ -309,11 +309,12 @@ public class DebeziumJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
                 debeziumType = "Date";
                 break;
             case "io.debezium.time.ZonedTimestamp":
+            case "io.debezium.time.Timestamp":
                 debeziumType = "ZonedTimestamp";
                 break;
-            case "io.debezium.time.Timestamp":
-                debeziumType = "Timestamp";
-                break;
+            // case "io.debezium.time.Timestamp":
+            // debeziumType = "Timestamp";
+            // break;
             default:
         }
 
