@@ -257,7 +257,6 @@ public class JsonToRowDataConverters implements Serializable {
     private TimestampData convertToTimestamp(JsonNode jsonNode) {
         if (StringUtils.isNumeric(jsonNode.asText())) {
             return TimestampData.fromEpochMillis(Long.parseLong(jsonNode.asText()));
-
         } else {
             TemporalAccessor parsedTimestamp;
             switch (timestampFormat) {
@@ -301,7 +300,7 @@ public class JsonToRowDataConverters implements Serializable {
         LocalDate localDate = parsedTimestampWithLocalZone.query(TemporalQueries.localDate());
 
         return TimestampData.fromInstant(
-                LocalDateTime.of(localDate, localTime).atZone(ZoneId.of("UTC")).toInstant());
+                LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant());
     }
 
     private StringData convertToString(JsonNode jsonNode) {
