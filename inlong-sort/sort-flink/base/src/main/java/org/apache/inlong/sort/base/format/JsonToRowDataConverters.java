@@ -47,10 +47,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
@@ -89,6 +86,12 @@ public class JsonToRowDataConverters implements Serializable {
      */
     private final TimestampFormat timestampFormat;
 
+
+    /**
+     * Timestamp format specification which is used to parse timestamp.
+     */
+    private final int timezoneOffset;
+
     /**
      * Wherther adapt spark sql program.
      */
@@ -97,10 +100,12 @@ public class JsonToRowDataConverters implements Serializable {
     public JsonToRowDataConverters(
             boolean failOnMissingField,
             boolean ignoreParseErrors,
+            int timezoneOffset,
             TimestampFormat timestampFormat,
             boolean adaptSpark) {
         this.failOnMissingField = failOnMissingField;
         this.ignoreParseErrors = ignoreParseErrors;
+        this.timezoneOffset = timezoneOffset;
         this.timestampFormat = timestampFormat;
         this.adaptSpark = adaptSpark;
     }
@@ -256,7 +261,13 @@ public class JsonToRowDataConverters implements Serializable {
 
     private TimestampData convertToTimestamp(JsonNode jsonNode) {
         if (StringUtils.isNumeric(jsonNode.asText())) {
-            return TimestampData.fromEpochMillis(Long.parseLong(jsonNode.asText()));
+            if (this.timezoneOffset<0){
+                return TimestampData
+                        .fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonNode.asText())).minus(Duration.ofHours(timezoneOffset)));
+            }else{
+                return TimestampData
+                        .fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonNode.asText())).plus(Duration.ofHours(timezoneOffset)));
+            }
         } else {
             TemporalAccessor parsedTimestamp;
             switch (timestampFormat) {
@@ -299,8 +310,13 @@ public class JsonToRowDataConverters implements Serializable {
         LocalTime localTime = parsedTimestampWithLocalZone.query(TemporalQueries.localTime());
         LocalDate localDate = parsedTimestampWithLocalZone.query(TemporalQueries.localDate());
 
-        return TimestampData.fromInstant(
-                LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant());
+        if (this.timezoneOffset<0){
+            return TimestampData.fromInstant(
+                    LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant().minus(Duration.ofHours(timezoneOffset)));
+        }else{
+            return TimestampData.fromInstant(
+                    LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant().plus(Duration.ofHours(timezoneOffset)));
+        }
     }
 
     private StringData convertToString(JsonNode jsonNode) {

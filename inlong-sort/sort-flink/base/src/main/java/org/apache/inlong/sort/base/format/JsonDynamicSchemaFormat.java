@@ -45,6 +45,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_TYPE_MAP_COMPATIBLE_WITH_SPARK;
+import static org.apache.inlong.sort.base.Constants.TIMEZONE_OFFSET;
 import static org.apache.inlong.sort.formats.json.utils.FormatJsonUtil.SQL_TYPE_2_FLINK_TYPE_MAPPING;
 import static org.apache.inlong.sort.formats.json.utils.FormatJsonUtil.SQL_TYPE_2_SPARK_SUPPORTED_FLINK_TYPE_MAPPING;
 import static org.apache.inlong.sort.protocol.constant.DataTypeConstants.DEFAULT_CHAR_LENGTH;
@@ -78,14 +79,17 @@ public abstract class JsonDynamicSchemaFormat extends AbstractDynamicSchemaForma
     private static final Pattern DIALECT_SQL_TYPE_PATTERN = Pattern.compile("([\\w, \\s]+)\\(([\\d,\\s'\\-]*)\\)");
     protected final JsonToRowDataConverters rowDataConverters;
     protected final boolean adaptSparkEngine;
+    protected final int timezoneOffset;
 
     public JsonDynamicSchemaFormat(Map<String, String> properties) {
         ReadableConfig config = Configuration.fromMap(properties);
         this.adaptSparkEngine = config.get(SINK_MULTIPLE_TYPE_MAP_COMPATIBLE_WITH_SPARK);
+        this.timezoneOffset = config.get(TIMEZONE_OFFSET);
         this.rowDataConverters =
                 new JsonToRowDataConverters(
                         false,
                         false,
+                        timezoneOffset,
                         TimestampFormat.ISO_8601,
                         adaptSparkEngine);
     }
