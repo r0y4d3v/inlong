@@ -47,21 +47,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.inlong.sort.base.Constants.AUDIT_KEYS;
-import static org.apache.inlong.sort.base.Constants.IGNORE_ALL_CHANGELOG;
-import static org.apache.inlong.sort.base.Constants.INLONG_AUDIT;
-import static org.apache.inlong.sort.base.Constants.INLONG_METRIC;
-import static org.apache.inlong.sort.base.Constants.SINK_AUTO_CREATE_TABLE_WHEN_SNAPSHOT;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_DATABASE_PATTERN;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_ENABLE;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_FORMAT;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_PK_AUTO_GENERATED;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_SCHEMA_UPDATE_POLICY;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_TABLE_PATTERN;
-import static org.apache.inlong.sort.base.Constants.SINK_MULTIPLE_TYPE_MAP_COMPATIBLE_WITH_SPARK;
-import static org.apache.inlong.sort.base.Constants.SINK_SCHEMA_CHANGE_ENABLE;
-import static org.apache.inlong.sort.base.Constants.SINK_SCHEMA_CHANGE_POLICIES;
-import static org.apache.inlong.sort.base.Constants.SWITCH_APPEND_UPSERT_ENABLE;
+import static org.apache.inlong.sort.base.Constants.*;
 import static org.apache.inlong.sort.iceberg.FlinkDynamicTableFactory.WRITE_DISTRIBUTION_MODE;
 import static org.apache.inlong.sort.iceberg.FlinkDynamicTableFactory.WRITE_PARALLELISM;
 
@@ -143,6 +129,8 @@ public class IcebergTableSink implements DynamicTableSink, SupportsPartitioning,
                     .multipleSinkOption(MultipleSinkOption.builder()
                             .withFormat(tableOptions.get(SINK_MULTIPLE_FORMAT))
                             .withSparkEngineEnable(tableOptions.get(SINK_MULTIPLE_TYPE_MAP_COMPATIBLE_WITH_SPARK))
+                            .withDatetimeOffset(tableOptions.get(SINK_MULTIPLE_DATETIME_OFFSET))
+                            .withTimestampOffset(tableOptions.get(SINK_MULTIPLE_TIMESTAMP_OFFSET))
                             .withDatabasePattern(tableOptions.get(SINK_MULTIPLE_DATABASE_PATTERN))
                             .withTablePattern(tableOptions.get(SINK_MULTIPLE_TABLE_PATTERN))
                             .withSchemaUpdatePolicy(tableOptions.get(SINK_MULTIPLE_SCHEMA_UPDATE_POLICY))

@@ -279,11 +279,16 @@ public final class Constants {
                     .withDescription("Because spark do not support iceberg data type: `timestamp without time zone` and"
                             + "`time`, so type conversions must be mapped to types supported by spark.");
 
-    public static final ConfigOption<Integer> TIMEZONE_OFFSET =
-            ConfigOptions.key("timezone.offset")
+    public static final ConfigOption<Integer> SINK_MULTIPLE_DATETIME_OFFSET =
+            ConfigOptions.key("sink.multiple.datetime.offset")
                     .intType()
                     .defaultValue(0)
-                    .withDescription("Timezone offset");
+                    .withDescription("Datetime offset");
+    public static final ConfigOption<Integer> SINK_MULTIPLE_TIMESTAMP_OFFSET =
+            ConfigOptions.key("sink.multiple.timestamp.offset")
+                    .intType()
+                    .defaultValue(0)
+                    .withDescription("Timestamp offset");
 
     public static final ConfigOption<PartitionPolicy> SINK_PARTITION_POLICY =
             ConfigOptions.key("sink.partition.policy")

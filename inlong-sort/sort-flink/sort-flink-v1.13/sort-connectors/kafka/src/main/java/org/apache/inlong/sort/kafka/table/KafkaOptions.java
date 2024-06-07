@@ -34,5 +34,4 @@ public class KafkaOptions {
                     .booleanType()
                     .defaultValue(false)
                     .withDescription("Regard upsert delete as insert kind.");
-
 }
