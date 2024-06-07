@@ -86,7 +86,6 @@ public class JsonToRowDataConverters implements Serializable {
      */
     private final TimestampFormat timestampFormat;
 
-
     /**
      * Timestamp format specification which is used to parse timestamp.
      */
@@ -261,13 +260,9 @@ public class JsonToRowDataConverters implements Serializable {
 
     private TimestampData convertToTimestamp(JsonNode jsonNode) {
         if (StringUtils.isNumeric(jsonNode.asText())) {
-            if (this.timezoneOffset<0){
-                return TimestampData
-                        .fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonNode.asText())).minus(Duration.ofHours(timezoneOffset)));
-            }else{
-                return TimestampData
-                        .fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonNode.asText())).plus(Duration.ofHours(timezoneOffset)));
-            }
+            return TimestampData
+                    .fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonNode.asText()))
+                            .plus(Duration.ofHours(timezoneOffset)));
         } else {
             TemporalAccessor parsedTimestamp;
             switch (timestampFormat) {
@@ -310,13 +305,9 @@ public class JsonToRowDataConverters implements Serializable {
         LocalTime localTime = parsedTimestampWithLocalZone.query(TemporalQueries.localTime());
         LocalDate localDate = parsedTimestampWithLocalZone.query(TemporalQueries.localDate());
 
-        if (this.timezoneOffset<0){
-            return TimestampData.fromInstant(
-                    LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant().minus(Duration.ofHours(timezoneOffset)));
-        }else{
-            return TimestampData.fromInstant(
-                    LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant().plus(Duration.ofHours(timezoneOffset)));
-        }
+        return TimestampData.fromInstant(
+                LocalDateTime.of(localDate, localTime).atZone(ZoneId.systemDefault()).toInstant()
+                        .plus(Duration.ofHours(timezoneOffset)));
     }
 
     private StringData convertToString(JsonNode jsonNode) {
