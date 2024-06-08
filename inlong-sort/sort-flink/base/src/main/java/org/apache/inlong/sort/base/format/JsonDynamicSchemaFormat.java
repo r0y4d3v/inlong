@@ -211,7 +211,7 @@ public abstract class JsonDynamicSchemaFormat extends AbstractDynamicSchemaForma
             matcher.appendReplacement(sb, replacement);
         }
         matcher.appendTail(sb);
-        return sb.toString();
+        return sb.toString().replace("-","_");
     }
 
     /**
