@@ -540,7 +540,7 @@ public class DynamicSchemaHandleOperator extends AbstractStreamOperator<RecordWi
 
         return IntStream.range(0, oldSchemaFields.size())
                 .allMatch(i -> oldSchemaFields.get(i).name().equals(newSchemaFields.get(i).name())
-                        && oldSchemaFields.get(i).type().equals(newSchemaFields.get(i).type()) );
+                        && oldSchemaFields.get(i).type().equals(newSchemaFields.get(i).type()));
     }
 
     private TableIdentifier parseId(JsonNode data) throws IOException {

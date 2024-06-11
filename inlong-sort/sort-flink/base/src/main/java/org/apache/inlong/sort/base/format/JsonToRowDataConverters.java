@@ -59,11 +59,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static org.apache.flink.formats.common.TimeFormats.ISO8601_TIMESTAMP_FORMAT;
-import static org.apache.flink.formats.common.TimeFormats.ISO8601_TIMESTAMP_WITH_LOCAL_TIMEZONE_FORMAT;
-import static org.apache.flink.formats.common.TimeFormats.SQL_TIMESTAMP_FORMAT;
-import static org.apache.flink.formats.common.TimeFormats.SQL_TIMESTAMP_WITH_LOCAL_TIMEZONE_FORMAT;
-import static org.apache.flink.formats.common.TimeFormats.SQL_TIME_FORMAT;
+import static org.apache.flink.formats.common.TimeFormats.*;
 
 /** Tool class used to convert from {@link JsonNode} to {@link RowData}. * */
 @Internal
