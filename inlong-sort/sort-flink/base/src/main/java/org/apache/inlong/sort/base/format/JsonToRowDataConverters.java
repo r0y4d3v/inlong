@@ -288,7 +288,8 @@ public class JsonToRowDataConverters implements Serializable {
         try {
             return jsonNode.binaryValue();
         } catch (IOException e) {
-            throw new JsonParseException("Unable to deserialize byte array.", e);
+            throw new JsonParseException("Unable to deserialize byte array, the raw data :" + jsonNode.toPrettyString(),
+                    e);
         }
     }
 

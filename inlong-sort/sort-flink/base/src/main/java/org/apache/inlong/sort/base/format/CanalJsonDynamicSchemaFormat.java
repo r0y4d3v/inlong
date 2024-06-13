@@ -24,6 +24,8 @@ import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.types.logical.RowType;
 import org.apache.flink.types.RowKind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,8 @@ import java.util.Map;
  * Canal json dynamic format
  */
 public class CanalJsonDynamicSchemaFormat extends JsonDynamicSchemaFormat {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CanalJsonDynamicSchemaFormat.class);
 
     private static final String DDL_FLAG = "ddl";
     private static final String DATA = "data";
