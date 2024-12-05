@@ -546,8 +546,10 @@ public class DynamicSchemaHandleOperator extends AbstractStreamOperator<RecordWi
 
     private boolean isTypeCompatible(Type oldType, Type newType) {
         // Allow int and long to be considered compatible
-        if ((oldType.equals(Types.LongType.get()) && newType.equals(Types.IntegerType.get())) ||
-                (oldType.equals(Types.IntegerType.get()) && newType.equals(Types.LongType.get()))) {
+        if (
+//                (oldType.equals(Types.LongType.get()) && newType.equals(Types.IntegerType.get())) ||
+                (oldType.equals(Types.IntegerType.get()) && newType.equals(Types.LongType.get()))
+        ) {
             return true;
         }
         // For all other types, require exact match
