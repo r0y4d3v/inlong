@@ -17,6 +17,7 @@
 
 package org.apache.inlong.sort.iceberg.sink.multiple;
 
+import org.apache.iceberg.types.Type;
 import org.apache.inlong.sort.base.dirty.DirtyOptions;
 import org.apache.inlong.sort.base.dirty.DirtySinkHelper;
 import org.apache.inlong.sort.base.dirty.DirtyType;
@@ -539,9 +540,21 @@ public class DynamicSchemaHandleOperator extends AbstractStreamOperator<RecordWi
         }
 
         return IntStream.range(0, oldSchemaFields.size())
-                .allMatch(i -> oldSchemaFields.get(i).name().equals(newSchemaFields.get(i).name())
-                        && oldSchemaFields.get(i).type().equals(newSchemaFields.get(i).type()));
+                .allMatch(i ->
+                        oldSchemaFields.get(i).name().equals(newSchemaFields.get(i).name())
+                        && isTypeCompatible(oldSchemaFields.get(i).type(), newSchemaFields.get(i).type())
+                );
     }
+
+    private boolean isTypeCompatible(Type oldType, Type newType) {
+        // Allow int and long to be considered compatible
+        if (oldType.equals(Types.LongType.get()) && newType.equals(Types.IntegerType.get())) {
+            return true;
+        }
+        // For all other types, require exact match
+        return oldType.equals(newType);
+    }
+
 
     private TableIdentifier parseId(JsonNode data) throws IOException {
         String databaseStr = dynamicSchemaFormat.parse(data, multipleSinkOption.getDatabasePattern());
