@@ -262,26 +262,26 @@ public class SchemaChangeUtils {
         // Example first [a, b, c] -> then delete c [a, b] -> add d [a, b, d], currently it is only judged as unknown
         // change.
         // In next version,we will judge it is [delete and add] or rename by using information extracted from DDL
-        if (!colsToDelete.isEmpty() && !colsToAdd.isEmpty()) {
-            tableChanges.add(new TableChange.UnknownColumnChange(
-                    String.format(" Old ColumnSchema: [%s] and new ColumnSchema: [%s], it is unknown column change",
-                            oldColumnSchemas, newColumnSchemas)));
-            return tableChanges;
-        }
+        // if (!colsToDelete.isEmpty() && !colsToAdd.isEmpty()) {
+        // tableChanges.add(new TableChange.UnknownColumnChange(
+        // String.format(" Old ColumnSchema: [%s] and new ColumnSchema: [%s], it is unknown column change",
+        // oldColumnSchemas, newColumnSchemas)));
+        // return tableChanges;
+        // }
 
         // 2.if some filed positions in new schema are not same with old schema, there is no way to deal with it.
         // This situation only is regarded as unknown column change
-        if (colsToDelete.isEmpty() && colsToAdd.isEmpty() && oldFieldSet.equals(newFieldSet)
-                && !oldFields.equals(newFields)) {
-            tableChanges.add(
-                    new TableChange.UnknownColumnChange(
-                            String.format(
-                                    " Old ColumnSchema: [%s] and new ColumnSchema: [%s], "
-                                            + " they are same but some filed positions are not same."
-                                            + " This situation only is regarded as unknown column change at present",
-                                    oldColumnSchemas, newColumnSchemas)));
-            return tableChanges;
-        }
+        // if (colsToDelete.isEmpty() && colsToAdd.isEmpty() && oldFieldSet.equals(newFieldSet)
+        // && !oldFields.equals(newFields)) {
+        // tableChanges.add(
+        // new TableChange.UnknownColumnChange(
+        // String.format(
+        // " Old ColumnSchema: [%s] and new ColumnSchema: [%s], "
+        // + " they are same but some filed positions are not same."
+        // + " This situation only is regarded as unknown column change at present",
+        // oldColumnSchemas, newColumnSchemas)));
+        // return tableChanges;
+        // }
 
         // step1: judge whether column type change
         for (String colName : intersectColSet) {
